@@ -1,0 +1,20 @@
+{
+  "name": "bitorbit-google-auth",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@solana/web3.js": "^1.44.0",
+    "@velas/account-agent": "^0.6.17",
+    "@velas/web3": "^0.1.15",
+    "axios": "^0.27.2",
+    "bs58": "^5.0.0",
+    "dotenv": "^16.0.1",
+    "google-auth-library": "^8.0.2",
+    "redis": "^4.1.0",
+    "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "express": "^4.18.1"
+  }
+}
