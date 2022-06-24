@@ -1,5 +1,5 @@
-import axios from 'axios'
-import { Connection } from '@velas/web3'
+const axios = require('axios');
+const { Connection } = require('@velas/web3');
 
 function Backend () {}
 
@@ -163,4 +163,4 @@ Backend.prototype.fetchTransactions = async function (address, params, network) 
   )
 }
 
-export const backend = new Backend()
+ module.exports = new Backend()
