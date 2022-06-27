@@ -1,8 +1,9 @@
 const Agent = require('@velas/account-agent')
 const solanaWeb3 = require('@solana/web3.js')
-const broadcastTransactionHendler = require('./broadcast')
-
-console.log(process.env.ACCOUNT_BACKEND_NODE_HOST)
+const tweetnacl = require('tweetnacl');
+const { findRequest } = require('../redis/index')
+const broadcastTransactionHendler = require('./broadcast');
+const base58 = require('bs58');
 
 const StorageHandler = class StorageHandler {
   constructor() {}
@@ -10,6 +11,17 @@ const StorageHandler = class StorageHandler {
 
 const KeyStorageHandler = class KeyStorageHandler {
   constructor() {}
+  async signWithKey(id, payload) {
+    try {
+      console.log('id: ', id);
+      const secret = await findRequest(`*:${id}`);
+      const result = tweetnacl.sign.detached(payload, new Uint8Array(id))
+      console.log(result);
+      return result;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 console.log({

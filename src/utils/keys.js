@@ -3,7 +3,7 @@ const solanaWeb3 = require('@solana/web3.js')
 const base58 = require('bs58')
 
 const createEphemeralKeys = () => {
-  const { publicKey, secretKey } = tweetnacl.box.keyPair()
+  const { publicKey, secretKey } = tweetnacl.sign.keyPair()
   return {
     publicKey: base58.encode(publicKey),
     secretKey: base58.encode(secretKey),

@@ -15,8 +15,7 @@ app.use(express.json())
 
 const createNewAccount = async (email, publicKey) => {
   const accountData = await createVelasAccount()
-  console.log(accountData);
-  await saveRequest(email, accountData.secretKey)
+  await saveRequest(`${email}:${accountData.publicKey}`, accountData.secretKey)
   await initializeVelasAccount(
     accountData.address,
     accountData.secretKey,
