@@ -62,7 +62,7 @@ const tryLogin = async (req, res) => {
       opKeyPublicKey,
       timestamp,
       isCreateAccount = false,
-    } = req.body
+    } = validReqBody(req.body)
     const { email } = await getGoogleAccountData(token)
     const ownerKeys = await findRequest(email)
     if (ownerKeys) {
