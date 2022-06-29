@@ -2,10 +2,11 @@ const express = require('express')
 const { findRequest, saveRequest } = require('./redis/index.js')
 const {
   createVelasAccount,
+  addOperationAddress,
+  findAccountAddressWithPublicKey,
   initializeVelasAccount,
 } = require('./velas-account/index.js')
 const { getGoogleAccountData } = require('./api/google.js')
-const { createEphemeralKeys } = require('./utils/keys.js')
 require('dotenv').config()
 
 const app = express()
@@ -15,21 +16,69 @@ app.use(express.json())
 
 const createNewAccount = async (email, publicKey) => {
   const accountData = await createVelasAccount()
-  await saveRequest(`${email}:${accountData.publicKey}`, accountData.secretKey)
-  await initializeVelasAccount(
-    accountData.address,
-    accountData.secretKey,
-    publicKey
-  )
+  await saveRequest(`${email}`, {
+    secretKey: accountData.secretKey,
+    publicKey: accountData.publicKey,
+  })
+  return accountData
 }
 
-const tryLogin = async (req) => {
-  const { token, opKeyPublicKey, timestamp, isCreateAccount } = req.body
+const login = async (ownerPublicKey, ownerPrivateKey, opKeyPublicKey) => {
   try {
+    const address = await findAccountAddressWithPublicKey(ownerPublicKey)
+    await initializeVelasAccount(address, ownerPrivateKey, opKeyPublicKey)
+    await addOperationAddress(address, ownerPrivateKey, opKeyPublicKey)
+    return address
+  } catch (error) {
+    throw new Error(`Login Error: ${error}`)
+  }
+}
+
+const createAccount = async (email, opKeyPublicKey) => {
+  console.log('Creating new account')
+  const account = await createNewAccount(email, opKeyPublicKey)
+  console.log(account)
+  await addOperationAddress(account.address, account.secretKey, opKeyPublicKey)
+  return account.address
+}
+
+const validReqBody = (body) => {
+  if (!body.token) {
+    throw new Error('Token is required')
+  }
+  if (!body.opKeyPublicKey) {
+    throw new Error('opKeyPublicKey is required')
+  }
+  if (!body.timestamp) {
+    throw new Error('timestamp is required')
+  }
+  return body
+}
+
+const tryLogin = async (req, res) => {
+  try {
+    const {
+      token,
+      opKeyPublicKey,
+      timestamp,
+      isCreateAccount = false,
+    } = req.body
     const { email } = await getGoogleAccountData(token)
-    if (isCreateAccount) {
-      const { publicKey } = createEphemeralKeys()
-      await createNewAccount(email, publicKey)
+    const ownerKeys = await findRequest(email)
+    if (ownerKeys) {
+      const address = await login(
+        ownerKeys.publicKey,
+        ownerKeys.secretKey,
+        opKeyPublicKey
+      )
+      return address
+    } else {
+      if (isCreateAccount) {
+        const address = await createAccount(email, opKeyPublicKey)
+        return address
+      } else {
+        res.send("Account doesn't exist")
+      }
     }
   } catch (error) {
     throw new Error(error)
@@ -37,9 +86,11 @@ const tryLogin = async (req) => {
 }
 
 app.post('/try-login', (req, res) => {
-  tryLogin(req, res).catch((error) => {
-    res.send(error.message)
-  })
+  tryLogin(req, res)
+    .then((address) => res.send(address))
+    .catch((error) => {
+      res.send({ message: error.message })
+    })
 })
 
 app.listen(port, () => {

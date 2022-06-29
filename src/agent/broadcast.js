@@ -1,8 +1,6 @@
 const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
-const axios = require('axios')
-
 const broadcast = (host, body) => {
   return fetch(`${host}/broadcast`, {
     method: 'POST',

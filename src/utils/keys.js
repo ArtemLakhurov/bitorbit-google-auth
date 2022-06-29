@@ -1,5 +1,5 @@
 const tweetnacl = require('tweetnacl')
-const solanaWeb3 = require('@solana/web3.js')
+const velasWeb3 = require('@velas/web3')
 const base58 = require('bs58')
 
 const createEphemeralKeys = () => {
@@ -12,9 +12,11 @@ const createEphemeralKeys = () => {
 
 const isValidAddress = (address) => {
   try {
-    new solanaWeb3.PublicKey(address)
+    new velasWeb3.PublicKey(address)
     return true
-  } catch (_) {}
+  } catch (error) {
+    console.log("isValidAddress error: ", error)
+  }
 
   return false
 }
