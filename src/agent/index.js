@@ -11,15 +11,16 @@ const StorageHandler = class StorageHandler {
 
 const KeyStorageHandler = class KeyStorageHandler {
   constructor() {}
-  // async signWithKey(id, payload) {
-  //   try {
-  //     const secret = await findRequest(`*:${id}`)
-  //     const result = tweetnacl.sign.detached(payload, new Uint8Array(id))
-  //     return result
-  //   } catch (error) {
-  //     console.error(error)
-  //   }
-  // }
+  async signWithKey(id, payload) {
+    try {
+      console.log('Id: ', id)
+      const secret = await findRequest(`*:${id}`)
+      const result = tweetnacl.sign.detached(payload, new Uint8Array(id))
+      return result
+    } catch (error) {
+      console.error(error)
+    }
+  }
 }
 
 console.log('Agent config: ', {

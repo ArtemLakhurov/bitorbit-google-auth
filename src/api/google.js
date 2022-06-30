@@ -1,4 +1,4 @@
-const CLIENT_ID = process.env.CLIENT_ID
+const CLIENT_ID = process.env.GOOGLE_WEB_CLIENT_ID
 const { OAuth2Client } = require('google-auth-library')
 const axios = require('axios')
 
@@ -15,7 +15,7 @@ const verify = async (token) => {
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
+      audience: [CLIENT_ID, process.env.GOOGLE_IOS_CLIENT_ID], // Specify the CLIENT_ID of the app that accesses the backend
       // Or, if multiple clients access the backend:
       //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
     })

@@ -26,7 +26,6 @@ const createNewAccount = async (email, publicKey) => {
 const login = async (ownerPublicKey, ownerPrivateKey, opKeyPublicKey) => {
   try {
     const address = await findAccountAddressWithPublicKey(ownerPublicKey)
-    await initializeVelasAccount(address, ownerPrivateKey, opKeyPublicKey)
     await addOperationAddress(address, ownerPrivateKey, opKeyPublicKey)
     return address
   } catch (error) {
@@ -35,9 +34,7 @@ const login = async (ownerPublicKey, ownerPrivateKey, opKeyPublicKey) => {
 }
 
 const createAccount = async (email, opKeyPublicKey) => {
-  console.log('Creating new account')
   const account = await createNewAccount(email, opKeyPublicKey)
-  console.log(account)
   await addOperationAddress(account.address, account.secretKey, opKeyPublicKey)
   return account.address
 }

@@ -12,21 +12,18 @@ const findAccountAddressWithPublicKey = async (publicKey) => {
   return await Agent.provider.client.findAccountAddressWithPublicKey(publicKey)
 }
 
-const getIsAccountInitialized = async (address) => {
-  console.log(
-    'getIsAccountInitialized: ',
-    !!(await Agent.provider.client.getAccountData(address))
-  )
-  return !!(await Agent.provider.client.getAccountData(address))
-}
+const getIsAccountInitialized = async (address) =>
+  await Agent.provider.client.getAccountData(address)
 
 const addOperationAddress = async (
   address,
   ownerPrivateKey,
   opKeyPublicKey
 ) => {
-  if (!getIsAccountInitialized(address))
+  const isAccountInitialized = await getIsAccountInitialized(address)
+  if (!isAccountInitialized) {
     await initializeVelasAccount(address, ownerPrivateKey, opKeyPublicKey)
+  }
 
   const { success, error } = await sendMessage(
     'addOperationalAddressTransaction',
@@ -51,24 +48,31 @@ const initializeVelasAccount = async (
   opKeyPublicKey
 ) => {
   try {
-    if (getIsAccountInitialized(address)) {
+    if (await getIsAccountInitialized(address))
       return 'Account already initialized'
-    }
-    if (await !isValidAddress(address)) {
-      console.log('Adderss is not valid')
+
+    if (!isValidAddress(address))
       return { status: 'failed', error: 'address not valid' }
-    }
+
+    console.log('initializeVelasAccount props: ', {
+      secret: ownerPrivateKey,
+      op_key: opKeyPublicKey,
+      agent_type: process.env.DEVICE_NAME,
+      transactions_sponsor_pub_key: process.env.TRANSACTION_SPONSOR_PUB_KEY,
+    })
+
     const { success, error } = await sendMessage(
       'initializeTransaction',
       {
         secret: ownerPrivateKey,
         op_key: opKeyPublicKey,
         agent_type: process.env.DEVICE_NAME,
+        scopes: [],
         transactions_sponsor_pub_key: process.env.TRANSACTION_SPONSOR_PUB_KEY,
       },
       process.env.VELAS_NETWORK
     )
-    console.log('Error: ', error)
+    console.log('Initialize Error: ', error)
     if (error || !success) {
       throw new Error(`Initialize Transaction Error: ${error.description}`)
     }
