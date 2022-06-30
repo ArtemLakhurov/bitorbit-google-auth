@@ -74,7 +74,7 @@ const tryLogin = async (req, res) => {
         const address = await createAccount(email, opKeyPublicKey)
         return address
       } else {
-        res.send("Account doesn't exist")
+        throw new Error("Account doesn't exist")
       }
     }
   } catch (error) {

@@ -33,13 +33,13 @@ const addOperationAddress = async (
       secretOperationalOrOwner: ownerPrivateKey,
       agent_type: process.env.DEVICE_NAME,
       transactions_sponsor_pub_key: process.env.TRANSACTION_SPONSOR_PUB_KEY,
+      scopes: [],
     },
     process.env.VELAS_NETWORK
   )
-
   if (error || !success)
-    return { status: 'failed', error: error || 'Something went wrong' }
-
+    throw new Error(`Add Operation Address Error: ${error.description}`)
+  console.log('Add Operational Address Success: ', success)
   return { status: 'success' }
 }
 const initializeVelasAccount = async (
