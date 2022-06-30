@@ -1,0 +1,16 @@
+## Run server:
+1. yarn
+2. node app.js
+## .env:
+GOOGLE_WEB_CLIENT_ID= </br>
+GOOGLE_IOS_CLIENT_ID= </br>
+BACKEND_HOST= </br>
+ACCOUNT_CONTRACT= </br>
+BACKEND_ACCOUNT= </br>
+RATES= </br>
+NODE_HOST= </br>
+ACCOUNT_RESOLVER_HOST= </br>
+TRANSACTION_SPONSOR_PUB_KEY= </br>
+REDIS_HOST= </br>
+DEVICE_NAME= </br>
+VELAS_NETWORK=
